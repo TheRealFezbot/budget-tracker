@@ -2,7 +2,7 @@ from fastapi import FastAPI, HTTPException
 from contextlib import asynccontextmanager
 from sqlmodel import Session, select
 from app.database import create_db_and_tables, engine
-from app.models import Transaction, TransactionCreate, TransactionUpdate
+from app.models import Transaction, TransactionCreate, TransactionUpdate, TransactionType
 
 @asynccontextmanager
 async def lifespan(app: FastAPI):
@@ -35,6 +35,26 @@ def get_transaction_or_404(session: Session, id: int):
     if not result:
         raise HTTPException(status_code=404, detail="Transaction not found")
     return result
+
+@app.get("/transactions/summary")
+def get_transaction_summary():
+    with Session(engine) as session:
+        total_income = 0
+        total_expense = 0
+        results = session.exec(select(Transaction)).all()
+        for result in results:
+            if result.type == TransactionType.income:
+                total_income += result.amount
+            if result.type == TransactionType.expense:
+                total_expense += result.amount
+        
+        net_balance = total_income - total_expense
+
+        return {
+            "total_income": total_income, 
+            "total_expense": total_expense, 
+            "net_balance": net_balance
+        }
 
 @app.get("/transactions/{id}")
 def get_transaction_by_id(id: int):

@@ -53,6 +53,7 @@ The API will be available at `http://127.0.0.1:8000` and interactive docs at `ht
 | POST | `/transactions` | Create a transaction |
 | GET | `/transactions` | List all transactions |
 | GET | `/transactions/{id}` | Get a transaction by ID |
+| GET | `/transactions/summary` | Get income, expenses, and balance |
 | PUT | `/transactions/{id}` | Update a transaction |
 | DELETE | `/transactions/{id}` | Delete a transaction |
 
@@ -75,7 +76,7 @@ Transaction type must be either `"income"` or `"expense"`.
 
 - [x] CRUD API for transactions
 - [x] Income/expense type validation
-- [ ] Summary endpoint (total income, total expenses, net balance)
+- [x] Summary endpoint (total income, total expenses, net balance)
 - [ ] Filter transactions by type and date range
 - [ ] React frontend
   - [ ] Transaction list view
