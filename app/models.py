@@ -15,3 +15,10 @@ class TransactionCreate(SQLModel):
     type: str
     amount: float
     transaction_date: date
+
+class TransactionUpdate(SQLModel):
+    name: str | None = None
+    description: str | None = None
+    type: str | None = None
+    amount: float | None = None
+    transaction_date: date | None = None
