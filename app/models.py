@@ -8,3 +8,10 @@ class Transaction(SQLModel, table=True):
     type: str
     amount: float
     transaction_date: date
+
+class TransactionCreate(SQLModel):
+    name: str
+    description: str | None
+    type: str
+    amount: float
+    transaction_date: date
