@@ -77,7 +77,7 @@ Transaction type must be either `"income"` or `"expense"`.
 - [x] CRUD API for transactions
 - [x] Income/expense type validation
 - [x] Summary endpoint (total income, total expenses, net balance)
-- [ ] Filter transactions by type and date range
+- [x] Filter transactions by type and date range
 - [ ] React frontend
   - [ ] Transaction list view
   - [ ] Add/edit transaction form

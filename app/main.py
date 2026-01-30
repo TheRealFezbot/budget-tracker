@@ -1,6 +1,7 @@
 from fastapi import FastAPI, HTTPException
 from contextlib import asynccontextmanager
 from sqlmodel import Session, select
+from datetime import date
 from app.database import create_db_and_tables, engine
 from app.models import Transaction, TransactionCreate, TransactionUpdate, TransactionType
 
@@ -25,9 +26,20 @@ def create_transaction(transaction: TransactionCreate):
         return db_transaction
     
 @app.get("/transactions")
-def get_transaction():
+def get_transaction(
+    type: TransactionType | None = None,
+    start_date: date | None = None,
+    end_date: date | None = None
+):
     with Session(engine) as session:
-        result = session.exec(select(Transaction)).all()
+        query = select(Transaction)
+        if type:
+            query = query.where(Transaction.type == type)
+        if start_date:
+            query = query.where(Transaction.transaction_date >= start_date)
+        if end_date:
+            query = query.where(Transaction.transaction_date <= end_date)
+        result = session.exec(query).all()
         return result
 
 def get_transaction_or_404(session: Session, id: int):
