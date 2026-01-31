@@ -29,12 +29,17 @@ function App() {
   const [currentPage, setCurrentPage] = useState(1)
   const itemsPerPage = 15
   
+  const [filterType, setFilterType] = useState<"all" | "income" | "expense">("all")
+  const [startDate, setStartDate] = useState("")
+  const [endDate, setEndDate] = useState("")
+
+
   // transaction form
   const [name, setName] = useState("")
   const [description, setDescription] = useState("")
   const [type, setType] = useState<"income" | "expense">("income")
   const [amount, setAmount] = useState("")
-  const [transactionDate, setTransactionDate] = useState("")
+  const [transactionDate, setTransactionDate] = useState(new Date().toISOString().split('T')[0])
 
   const [message, setMessage] = useState("")
 
@@ -114,6 +119,10 @@ function App() {
     .then(data => setSummary(data))
   }, []
 )
+  const filtered = transactions
+  .filter(t => filterType === "all" || t.type === filterType)
+  .filter(t => !startDate || t.transaction_date >= startDate)
+  .filter(t => !endDate || t.transaction_date <= endDate)
   
   return (
     <>
@@ -163,6 +172,22 @@ function App() {
         </section>
         <section className='transactions'>
           <h2>Transactions</h2>
+          <div className='filters'>
+            <h3>filters</h3>
+            <label>Type:
+              <select value={filterType} onChange={(e) => { setFilterType(e.target.value as "all" | "income" | "expense"); setCurrentPage(1)}}>
+                <option>all</option>
+                <option>income</option>
+                <option>expense</option>
+              </select>
+            </label>
+            <label>Start Date:
+              <input type='date' value={startDate} onChange={(e) => { setStartDate(e.target.value); setCurrentPage(1)}} />
+            </label>
+            <label>End Date:
+              <input type='date' value={endDate} onChange={(e) => { setEndDate(e.target.value); setCurrentPage(1)}} />
+            </label>
+          </div>
           <table>
             <thead>
               <tr>
@@ -174,7 +199,7 @@ function App() {
               </tr>
             </thead>
             <tbody>
-              {transactions.slice((currentPage - 1) * itemsPerPage, currentPage * itemsPerPage).map((transaction) => (
+              {filtered.slice((currentPage - 1) * itemsPerPage, currentPage * itemsPerPage).map((transaction) => (
                 <tr key={transaction.id}>
                   <td>{transaction.name}</td>
                   <td>{transaction.description}</td>
@@ -198,8 +223,8 @@ function App() {
           </table>
           <div className='pagination'>
             <button disabled={currentPage === 1} className='tableButton' onClick={() => setCurrentPage(currentPage - 1)}>Previous</button>
-            <button disabled={currentPage * itemsPerPage >= transactions.length} className='tableButton' onClick={() => setCurrentPage(currentPage + 1)}>Next</button>
-            <span style={{width: '100%', textAlign: 'center'}}>Page {currentPage} of {Math.ceil(transactions.length / itemsPerPage)}</span>
+            <button disabled={currentPage * itemsPerPage >= filtered.length} className='tableButton' onClick={() => setCurrentPage(currentPage + 1)}>Next</button>
+            <span style={{width: '100%', textAlign: 'center'}}>Page {currentPage} of {Math.ceil(filtered.length / itemsPerPage)}</span>
           </div>
         </section>
       </div>

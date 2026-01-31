@@ -160,3 +160,33 @@ form button {
   color: var(--text);
   cursor: not-allowed;
 }
+
+.filters {
+  display: flex;
+  gap: 0.75rem;
+  align-items: center;
+  margin-bottom: 1rem;
+  flex-wrap: wrap;
+  justify-content: center;
+}
+
+.filters label {
+  display: flex;
+  flex-direction: column;
+  font-weight: bold;
+  gap: 0.25rem;
+  text-align: center;
+}
+
+.filters select, .filters input {
+  padding: 0.5rem;
+  border: 1px solid var(--light-gray);
+  border-radius: 4px;
+  font-family: inherit;
+  text-align: center;
+}
+
+.filters h3 {
+  width: 100%;
+  text-align: center;
+}

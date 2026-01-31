@@ -98,7 +98,7 @@ Transaction type must be either `"income"` or `"expense"`.
   - [x] Balance summary dashboard
   - [x] Color-coded amounts (income/expense)
   - [x] Pagination
-  - [ ] Filter transactions by type and date range (frontend)
+  - [x] Filter transactions by type and date range (frontend)
 
 ### Production (PostgreSQL)
 - [ ] Migrate from SQLite to PostgreSQL
