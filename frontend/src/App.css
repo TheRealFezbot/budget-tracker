@@ -115,6 +115,16 @@ form button {
   font-weight: 600;
 }
 
+.edit {
+  background-color: var(--action);
+  color: var(--white);
+  border: none;
+  padding: 0.4rem 0.75rem;
+  cursor: pointer;
+  font-weight: 600;
+  margin-left: 0.25rem;
+}
+
 .success-msg {
   color: var(--income);
   text-align: center;

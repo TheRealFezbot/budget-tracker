@@ -19,6 +19,7 @@ interface Summary {
 function App() {
   const url = "http://localhost:8000/transactions"
   
+  const [editingId, setEditingId] = useState<number | null>(null)
   const [transactions, setTransactions] = useState<Transaction[]>([])
   const [summary, setSummary] = useState<Summary>({
     total_income: 0,
@@ -46,10 +47,19 @@ function App() {
     })
   }
 
+  const handleEdit = (transaction: Transaction) => {
+    setName(transaction.name)
+    setDescription(transaction.description || "")
+    setType(transaction.type)
+    setAmount(String(transaction.amount))
+    setTransactionDate(transaction.transaction_date)
+    setEditingId(transaction.id)
+  }
+
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault()
-    fetch(`${url}`, {
-      method: "POST",
+    fetch(editingId ? `${url}/${editingId}` : `${url}`, {
+      method: editingId ? "PUT" : "POST",
       headers: { "Content-Type": "application/json"},
       body: JSON.stringify({
         name: name,
@@ -63,13 +73,8 @@ function App() {
       if (response.ok) {
         fetch(`${url}`).then(r => r.json()).then(data => setTransactions(data))
         fetch(`${url}/summary`).then(r => r.json()).then(data => setSummary(data))
-        setMessage("Transaction added!")
-        setName("")
-        setDescription("")
-        setType("income")
-        setAmount("")
-        setTransactionDate("")
-        setTimeout(() => setMessage(""), 3000)
+        setMessage(editingId ? "Transaction Updated!" : "Transaction added!")
+        resetForm()
       } else {
         return response.json().then(err => {
           setMessage(`Error: ${err.detail[0].msg}`)
@@ -77,6 +82,16 @@ function App() {
         })
       }
     })
+  }
+
+  const resetForm = () => {
+    setName("")
+    setDescription("")
+    setType("income")
+    setAmount("")
+    setTransactionDate("")
+    setEditingId(null)
+    setTimeout(() => setMessage(""), 3000)
   }
 
   useEffect(() => {
@@ -114,7 +129,7 @@ function App() {
             <h3>Balance</h3>
             <p style={{ color: summary.net_balance >= 0 ? 'var(--income)' : 'var(--error)'}}>€{summary.net_balance}</p>
           </div>
-          <h2>Add Transactions</h2>
+          <h2>{editingId ? "Edit Transaction" : "Add Transactions"}</h2>
           <form onSubmit={handleSubmit}>
             <label>Name: 
               <input type='text' value={name} onChange={(e) => setName(e.target.value)}/>
@@ -134,7 +149,8 @@ function App() {
             <label>Date:
               <input type="date" value={transactionDate} onChange={(e) => setTransactionDate(e.target.value)} />
             </label>
-            <button type="submit">Add Transaction</button>
+            <button type="submit">{editingId ? "Update Transaction" : "Add Transaction"}</button>
+            {editingId && <button type='button' onClick={() => resetForm()}>Cancel</button>}
             {message && <p className={message.startsWith("Error") ? "error-msg" : "success-msg"}>{message}</p>}
           </form>
         </section>
@@ -144,7 +160,7 @@ function App() {
             <thead>
               <tr>
                 <th>Name</th>
-                <th>Type</th>
+                <th>Description</th>
                 <th>Amount</th>
                 <th>Date</th>
                 <th>Actions</th>
@@ -154,14 +170,21 @@ function App() {
               {transactions.map((transaction) => (
                 <tr key={transaction.id}>
                   <td>{transaction.name}</td>
-                  <td>{transaction.type}</td>
-                  <td>{transaction.amount}</td>
+                  <td>{transaction.description}</td>
+                  <td style={{ color: transaction.type === "income" ? "var(--income)" : "var(--expense)", fontWeight: "bold"}}>{transaction.type === "income" ? "+ " : "- "}€{transaction.amount}</td>
                   <td>{new Date(transaction.transaction_date).toLocaleDateString('en-GB', {
                     day: '2-digit',
                     month: '2-digit',
                     year: 'numeric'
                   }).replace(/\//g, '-')}</td>
-                  <td><button className='delete' onClick={() => handleDelete(transaction.id)}>DELETE</button></td>
+                  <td>
+                    <button className='delete' onClick={() => handleDelete(transaction.id)}>
+                      DELETE
+                    </button>
+                    <button className='edit' onClick={() => handleEdit(transaction)}>
+                      EDIT
+                    </button>
+                  </td>
                 </tr>
               ))}
             </tbody>
