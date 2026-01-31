@@ -91,7 +91,7 @@ Transaction type must be either `"income"` or `"expense"`.
 - [x] Filter transactions by type and date range
 - [x] React frontend
   - [x] Transaction list view
-  - [ ] Add/edit transaction form
+  - [x] Add transaction form
   - [x] Balance summary dashboard
 - [ ] Transaction categories (food, rent, entertainment, etc.)
 - [ ] Monthly/weekly breakdowns

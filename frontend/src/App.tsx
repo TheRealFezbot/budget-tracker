@@ -1,4 +1,4 @@
-import { useState, useEffect } from 'react'
+import React, { useState, useEffect } from 'react'
 import './App.css'
 
 interface Transaction {
@@ -25,6 +25,48 @@ function App() {
     total_expense: 0,
     net_balance: 0,
   })
+  
+  // transaction form
+  const [name, setName] = useState("")
+  const [description, setDescription] = useState("")
+  const [type, setType] = useState<"income" | "expense">("income")
+  const [amount, setAmount] = useState("")
+  const [transactionDate, setTransactionDate] = useState("")
+
+  const [message, setMessage] = useState("")
+
+  const handleSubmit = (e: React.FormEvent) => {
+    e.preventDefault()
+    fetch(`${url}/transactions`, {
+      method: "POST",
+      headers: { "Content-Type": "application/json"},
+      body: JSON.stringify({
+        name: name,
+        description: description,
+        type: type,
+        amount: parseFloat(amount),
+        transaction_date: transactionDate
+      })
+    })
+    .then((response) => {
+      if (response.ok) {
+        fetch(`${url}/transactions`).then(r => r.json()).then(data => setTransactions(data))
+        fetch(`${url}/transactions/summary`).then(r => r.json()).then(data => setSummary(data))
+        setMessage("Transaction added!")
+        setName("")
+        setDescription("")
+        setType("income")
+        setAmount("")
+        setTransactionDate("")
+        setTimeout(() => setMessage(""), 3000)
+      } else {
+        return response.json().then(err => {
+          setMessage(`Error: ${err.detail[0].msg}`)
+          setTimeout(() => setMessage(""), 3000)
+        })
+      }
+    })
+  }
 
   useEffect(() => {
     fetch(`${url}/transactions`)
@@ -61,6 +103,29 @@ function App() {
             <h3>Balance</h3>
             <p style={{ color: summary.net_balance >= 0 ? 'var(--income)' : 'var(--error)'}}>€{summary.net_balance}</p>
           </div>
+          <h2>Add Transactions</h2>
+          <form onSubmit={handleSubmit}>
+            <label>Name: 
+              <input type='text' value={name} onChange={(e) => setName(e.target.value)}/>
+            </label>
+            <label>Description: 
+              <input type='text' value={description} onChange={(e) => setDescription(e.target.value)}/>
+            </label>
+            <label>Type: 
+              <select value={type} onChange={(e) => setType(e.target.value as "income" | "expense")}>
+                <option>income</option>
+                <option>expense</option>
+              </select>
+            </label>
+            <label>Amount:
+              <input type="number" value={amount} onChange={(e) => setAmount(e.target.value)} />
+            </label>
+            <label>Date:
+              <input type="date" value={transactionDate} onChange={(e) => setTransactionDate(e.target.value)} />
+            </label>
+            <button type="submit">Add Transaction</button>
+            {message && <p className={message.startsWith("Error") ? "error-msg" : "success-msg"}>{message}</p>}
+          </form>
         </section>
         <section className='transactions'>
           <h2>Transactions</h2>
