@@ -85,16 +85,28 @@ Transaction type must be either `"income"` or `"expense"`.
 
 ## Roadmap
 
+### MVP (SQLite)
 - [x] CRUD API for transactions
 - [x] Income/expense type validation
 - [x] Summary endpoint (total income, total expenses, net balance)
-- [x] Filter transactions by type and date range
+- [x] Filter transactions by type and date range (backend)
 - [x] React frontend
   - [x] Transaction list view
   - [x] Add transaction form
+  - [x] Edit transaction (inline form reuse with PUT)
+  - [x] Delete transaction (with confirmation)
   - [x] Balance summary dashboard
+  - [x] Color-coded amounts (income/expense)
+  - [x] Pagination
+  - [ ] Filter transactions by type and date range (frontend)
+
+### Production (PostgreSQL)
+- [ ] Migrate from SQLite to PostgreSQL
+- [ ] Server-side pagination and filtering
+- [ ] User authentication (multi-user support)
+- [ ] Multi-page routing (React Router)
 - [ ] Transaction categories (food, rent, entertainment, etc.)
 - [ ] Monthly/weekly breakdowns
 - [ ] Charts and visualizations
 - [ ] Export to CSV
-- [ ] User authentication (multi-user support)
+- [ ] Deploy to web

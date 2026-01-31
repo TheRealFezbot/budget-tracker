@@ -26,6 +26,8 @@ function App() {
     total_expense: 0,
     net_balance: 0,
   })
+  const [currentPage, setCurrentPage] = useState(1)
+  const itemsPerPage = 15
   
   // transaction form
   const [name, setName] = useState("")
@@ -167,7 +169,7 @@ function App() {
               </tr>
             </thead>
             <tbody>
-              {transactions.map((transaction) => (
+              {transactions.slice((currentPage - 1) * itemsPerPage, currentPage * itemsPerPage).map((transaction) => (
                 <tr key={transaction.id}>
                   <td>{transaction.name}</td>
                   <td>{transaction.description}</td>
@@ -189,6 +191,10 @@ function App() {
               ))}
             </tbody>
           </table>
+          <div className='pagination'>
+            <button disabled={currentPage === 1} className='tableButton' onClick={() => setCurrentPage(currentPage - 1)}>Previous</button>
+            <button disabled={currentPage * itemsPerPage >= transactions.length} className='tableButton' onClick={() => setCurrentPage(currentPage + 1)}>Next</button>
+          </div>
         </section>
       </div>
     </div>
