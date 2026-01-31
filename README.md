@@ -78,8 +78,8 @@ Transaction type must be either `"income"` or `"expense"`.
 - [x] Income/expense type validation
 - [x] Summary endpoint (total income, total expenses, net balance)
 - [x] Filter transactions by type and date range
-- [ ] React frontend
-  - [ ] Transaction list view
+- [x] React frontend
+  - [x] Transaction list view
   - [ ] Add/edit transaction form
   - [ ] Balance summary dashboard
 - [ ] Transaction categories (food, rent, entertainment, etc.)
