@@ -140,8 +140,10 @@ form button {
 .pagination {
   display: flex;
   justify-content: center;
+  align-items: center;
   gap: 0.5rem;
   margin-top: 1rem;
+  flex-wrap: wrap;
 }
 
 .tableButton {
@@ -151,4 +153,10 @@ form button {
   padding: 0.4rem 0.75rem;
   cursor: pointer;
   font-weight: 600;
+}
+
+.tableButton:disabled {
+  background-color: var(--light-gray);
+  color: var(--text);
+  cursor: not-allowed;
 }

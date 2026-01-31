@@ -46,6 +46,11 @@ function App() {
     .then(() => {
       fetch(`${url}`).then(r => r.json()).then(data => setTransactions(data))
       fetch(`${url}/summary`).then(r => r.json()).then(data => setSummary(data))
+      const newTotal = transactions.length -1
+      const maxPage = Math.ceil(newTotal / itemsPerPage) || 1
+      if (currentPage > maxPage) {
+        setCurrentPage(maxPage)
+      }
     })
   }
 
@@ -134,7 +139,7 @@ function App() {
           <h2>{editingId ? "Edit Transaction" : "Add Transactions"}</h2>
           <form onSubmit={handleSubmit}>
             <label>Name: 
-              <input type='text' value={name} onChange={(e) => setName(e.target.value)}/>
+              <input type='text' value={name} required onChange={(e) => setName(e.target.value)}/>
             </label>
             <label>Description: 
               <input type='text' value={description} onChange={(e) => setDescription(e.target.value)}/>
@@ -146,7 +151,7 @@ function App() {
               </select>
             </label>
             <label>Amount:
-              <input type="number" value={amount} onChange={(e) => setAmount(e.target.value)} />
+              <input type="number" value={amount} min="0.01" step="0.01" onChange={(e) => setAmount(e.target.value)} />
             </label>
             <label>Date:
               <input type="date" value={transactionDate} onChange={(e) => setTransactionDate(e.target.value)} />
@@ -194,6 +199,7 @@ function App() {
           <div className='pagination'>
             <button disabled={currentPage === 1} className='tableButton' onClick={() => setCurrentPage(currentPage - 1)}>Previous</button>
             <button disabled={currentPage * itemsPerPage >= transactions.length} className='tableButton' onClick={() => setCurrentPage(currentPage + 1)}>Next</button>
+            <span style={{width: '100%', textAlign: 'center'}}>Page {currentPage} of {Math.ceil(transactions.length / itemsPerPage)}</span>
           </div>
         </section>
       </div>
