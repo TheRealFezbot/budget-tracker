@@ -106,6 +106,15 @@ form button {
   font-weight: 600;
 }
 
+.delete {
+  background-color: var(--error);
+  color: var(--white);
+  border: none;
+  padding: 0.4rem 0.75rem;
+  cursor: pointer;
+  font-weight: 600;
+}
+
 .success-msg {
   color: var(--income);
   text-align: center;

@@ -17,7 +17,7 @@ interface Summary {
 }
 
 function App() {
-  const url = "http://localhost:8000"
+  const url = "http://localhost:8000/transactions"
   
   const [transactions, setTransactions] = useState<Transaction[]>([])
   const [summary, setSummary] = useState<Summary>({
@@ -35,9 +35,20 @@ function App() {
 
   const [message, setMessage] = useState("")
 
+  const handleDelete = (id: number) => {
+    if (!window.confirm("Are you sure you want to delete this transaction?")) return
+    fetch(`${url}/${id}`, {
+      method: "DELETE"
+    })
+    .then(() => {
+      fetch(`${url}`).then(r => r.json()).then(data => setTransactions(data))
+      fetch(`${url}/summary`).then(r => r.json()).then(data => setSummary(data))
+    })
+  }
+
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault()
-    fetch(`${url}/transactions`, {
+    fetch(`${url}`, {
       method: "POST",
       headers: { "Content-Type": "application/json"},
       body: JSON.stringify({
@@ -50,8 +61,8 @@ function App() {
     })
     .then((response) => {
       if (response.ok) {
-        fetch(`${url}/transactions`).then(r => r.json()).then(data => setTransactions(data))
-        fetch(`${url}/transactions/summary`).then(r => r.json()).then(data => setSummary(data))
+        fetch(`${url}`).then(r => r.json()).then(data => setTransactions(data))
+        fetch(`${url}/summary`).then(r => r.json()).then(data => setSummary(data))
         setMessage("Transaction added!")
         setName("")
         setDescription("")
@@ -69,14 +80,14 @@ function App() {
   }
 
   useEffect(() => {
-    fetch(`${url}/transactions`)
+    fetch(`${url}`)
     .then(response => response.json())
     .then(data => setTransactions(data))
   }, []
 )
 
   useEffect(() => {
-    fetch(`${url}/transactions/summary`)
+    fetch(`${url}/summary`)
     .then(response => response.json())
     .then(data => setSummary(data))
   }, []
@@ -136,6 +147,7 @@ function App() {
                 <th>Type</th>
                 <th>Amount</th>
                 <th>Date</th>
+                <th>Actions</th>
               </tr>
             </thead>
             <tbody>
@@ -149,6 +161,7 @@ function App() {
                     month: '2-digit',
                     year: 'numeric'
                   }).replace(/\//g, '-')}</td>
+                  <td><button className='delete' onClick={() => handleDelete(transaction.id)}>DELETE</button></td>
                 </tr>
               ))}
             </tbody>
