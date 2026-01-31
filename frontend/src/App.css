@@ -20,6 +20,7 @@ header, th {
   background-color: var(--header);
   color: var(--white);
   padding: 1rem 2rem;
+  text-align: center;
 }
 
 table {
@@ -48,5 +49,29 @@ th, td {
 .sumform, .transactions {
   background-color: var(--white);
   border-radius: 8px;
-  padding: 1.5rem
+  padding: 1.5rem;
+  box-shadow: 0 1px 3px rgba(0,0,0,0.1);
+}
+
+.summary-item {
+  padding: .5rem;
+  font-weight: bold;
+  border-bottom: 1px solid var(--light-gray);
+  text-align: center;
+}
+
+.sumform h2, .transactions h2 {
+  background-color: var(--header);
+  color: var(--white);
+  padding: 0.75rem 1rem;
+  border-radius: 4px;
+  text-align: center;
+}
+
+.income p {
+  color: var(--income);
+}
+
+.expense p {
+  color: var(--expense);
 }

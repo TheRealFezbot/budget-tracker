@@ -10,13 +10,33 @@ interface Transaction {
   transaction_date: string
 }
 
+interface Summary {
+  total_income: number
+  total_expense: number
+  net_balance: number
+}
+
 function App() {
-  const [transactions, setTransactions] = useState<Transaction[]>([])
+  const url = "http://localhost:8000"
   
+  const [transactions, setTransactions] = useState<Transaction[]>([])
+  const [summary, setSummary] = useState<Summary>({
+    total_income: 0,
+    total_expense: 0,
+    net_balance: 0,
+  })
+
   useEffect(() => {
-    fetch("http://localhost:8000/transactions")
+    fetch(`${url}/transactions`)
     .then(response => response.json())
     .then(data => setTransactions(data))
+  }, []
+)
+
+  useEffect(() => {
+    fetch(`${url}/transactions/summary`)
+    .then(response => response.json())
+    .then(data => setSummary(data))
   }, []
 )
   
@@ -28,9 +48,22 @@ function App() {
       </header>
       <div className='dashboard'>
         <section className='sumform'>
-          {/* summary and form will go here*/}
+          <h2>Summary</h2>
+          <div className='summary-item income'>
+            <h3>Income</h3>
+            <p>€{summary.total_income}</p>
+          </div>
+          <div className='summary-item expense'>
+            <h3>Expenses</h3>
+            <p>€{summary.total_expense}</p>
+          </div>
+          <div className='summary-item balance'>
+            <h3>Balance</h3>
+            <p style={{ color: summary.net_balance >= 0 ? 'var(--income)' : 'var(--error)'}}>€{summary.net_balance}</p>
+          </div>
         </section>
         <section className='transactions'>
+          <h2>Transactions</h2>
           <table>
             <thead>
               <tr>

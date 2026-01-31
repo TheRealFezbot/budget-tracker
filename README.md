@@ -6,13 +6,14 @@ A personal budget tracking application built with FastAPI and SQLite. Track inco
 
 - **Backend:** Python, FastAPI, SQLModel
 - **Database:** SQLite
-- **Frontend:** React (planned)
+- **Frontend:** React, TypeScript, Vite
 
 ## Getting Started
 
 ### Prerequisites
 
 - Python 3.12+
+- Node.js 22+
 
 ### Installation
 
@@ -37,13 +38,23 @@ source .venv/bin/activate
 pip install fastapi sqlmodel uvicorn
 ```
 
-### Running the Server
+### Running the Backend
 
 ```bash
 fastapi dev app/main.py
 ```
 
 The API will be available at `http://127.0.0.1:8000` and interactive docs at `http://127.0.0.1:8000/docs`.
+
+### Running the Frontend
+
+```bash
+cd frontend
+npm install
+npm run dev
+```
+
+The frontend will be available at `http://localhost:5173`.
 
 ## API Endpoints
 
@@ -81,7 +92,7 @@ Transaction type must be either `"income"` or `"expense"`.
 - [x] React frontend
   - [x] Transaction list view
   - [ ] Add/edit transaction form
-  - [ ] Balance summary dashboard
+  - [x] Balance summary dashboard
 - [ ] Transaction categories (food, rent, entertainment, etc.)
 - [ ] Monthly/weekly breakdowns
 - [ ] Charts and visualizations
