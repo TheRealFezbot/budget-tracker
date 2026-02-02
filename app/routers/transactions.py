@@ -1,16 +1,21 @@
-from fastapi import APIRouter, HTTPException
+from fastapi import APIRouter, HTTPException, Depends
 from app.models import Transaction, TransactionCreate, TransactionUpdate, TransactionType
 from sqlmodel import Session, select
 from datetime import date
 from app.database import engine
+from app.auth import get_current_user
+from app.models import User
 
 router = APIRouter()
 
 
 @router.post("/transactions")
-def create_transaction(transaction: TransactionCreate):
+def create_transaction(
+    transaction: TransactionCreate, 
+    current_user: User = Depends(get_current_user)
+):
     with Session(engine) as session:
-        db_transaction = Transaction(**transaction.model_dump())
+        db_transaction = Transaction(**transaction.model_dump(), user_id=current_user.id)
         session.add(db_transaction)
         session.commit()
         session.refresh(db_transaction)
@@ -20,10 +25,11 @@ def create_transaction(transaction: TransactionCreate):
 def get_transaction(
     type: TransactionType | None = None,
     start_date: date | None = None,
-    end_date: date | None = None
+    end_date: date | None = None,
+    current_user: User = Depends(get_current_user)
 ):
     with Session(engine) as session:
-        query = select(Transaction)
+        query = select(Transaction).where(Transaction.user_id == current_user.id)
         if type:
             query = query.where(Transaction.type == type)
         if start_date:
@@ -40,11 +46,11 @@ def get_transaction_or_404(session: Session, id: int):
     return result
 
 @router.get("/transactions/summary")
-def get_transaction_summary():
+def get_transaction_summary(current_user: User = Depends(get_current_user)):
     with Session(engine) as session:
         total_income = 0
         total_expense = 0
-        results = session.exec(select(Transaction)).all()
+        results = session.exec(select(Transaction).where(Transaction.user_id == current_user.id)).all()
         for result in results:
             if result.type == TransactionType.income:
                 total_income += result.amount
@@ -60,24 +66,31 @@ def get_transaction_summary():
         }
 
 @router.get("/transactions/{id}")
-def get_transaction_by_id(id: int):
+def get_transaction_by_id(id: int, current_user: User = Depends(get_current_user)):
     with Session(engine) as session:
         result = get_transaction_or_404(session, id)
+        if result.user_id != current_user.id:
+            raise HTTPException(status_code=403, detail="Not authorized")
         return result
 
 @router.delete("/transactions/{id}")
-def delete_transaction(id: int):
+def delete_transaction(id: int, current_user: User = Depends(get_current_user)):
     with Session(engine) as session:
         transaction_to_delete = get_transaction_or_404(session, id)
+        if transaction_to_delete.user_id != current_user.id:
+            raise HTTPException(status_code=403, detail="Not authorized")
         session.delete(transaction_to_delete)
         session.commit()
         return {"message": "Transaction deleted"}
     
 
 @router.put("/transactions/{id}")
-def update_transaction(id: int, updates: TransactionUpdate):
+def update_transaction(id: int, updates: TransactionUpdate, current_user: User = Depends(get_current_user)):
     with Session(engine) as session:
         transaction_to_update = get_transaction_or_404(session, id)
+        if transaction_to_update.user_id != current_user.id:
+            raise HTTPException(status_code=403, detail="Not authorized")
+
         update_data = updates.model_dump(exclude_unset=True)
         
         for key, value in update_data.items():

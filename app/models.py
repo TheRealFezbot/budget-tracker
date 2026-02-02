@@ -8,6 +8,7 @@ class TransactionType(str, Enum):
 
 class Transaction(SQLModel, table=True):
     id: int | None = Field(default=None, primary_key=True)
+    user_id: int = Field(foreign_key="users.id")
     name: str
     description: str | None
     type: TransactionType
