@@ -1,11 +1,11 @@
 # Budget Tracker
 
-A personal budget tracking application built with FastAPI and SQLite. Track income and expenses, view transaction history, and monitor your balance.
+A personal budget tracking application built with FastAPI and PostgreSQL. Track income and expenses, view transaction history, and monitor your balance.
 
 ## Tech Stack
 
 - **Backend:** Python, FastAPI, SQLModel
-- **Database:** SQLite
+- **Database:** PostgreSQL
 - **Frontend:** React, TypeScript, Vite
 
 ## Getting Started
@@ -14,6 +14,7 @@ A personal budget tracking application built with FastAPI and SQLite. Track inco
 
 - Python 3.12+
 - Node.js 22+
+- PostgreSQL
 
 ### Installation
 
@@ -35,7 +36,22 @@ source .venv/bin/activate
 ```bash
 python -m venv .venv
 source .venv/bin/activate
-pip install fastapi sqlmodel uvicorn
+pip install fastapi sqlmodel uvicorn psycopg2-binary python-dotenv
+```
+
+### Database Setup
+
+1. Create a PostgreSQL database and user:
+```sql
+sudo -u postgres psql
+CREATE USER youruser WITH PASSWORD 'yourpassword';
+CREATE DATABASE budget_tracker OWNER youruser;
+\q
+```
+
+2. Create a `.env` file in the project root:
+```
+DATABASE_URL=postgresql://youruser:yourpassword@localhost:5432/budget_tracker
 ```
 
 ### Running the Backend
@@ -101,7 +117,7 @@ Transaction type must be either `"income"` or `"expense"`.
   - [x] Filter transactions by type and date range (frontend)
 
 ### Production (PostgreSQL)
-- [ ] Migrate from SQLite to PostgreSQL
+- [x] Migrate from SQLite to PostgreSQL
 - [ ] Server-side pagination and filtering
 - [ ] User authentication (multi-user support)
 - [ ] Multi-page routing (React Router)
