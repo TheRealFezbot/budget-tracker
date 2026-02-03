@@ -77,12 +77,16 @@ The frontend will be available at `http://localhost:5173`.
 | Method | Endpoint | Description |
 |--------|----------|-------------|
 | GET | `/` | API status |
+| POST | `/register` | Register a new user |
+| POST | `/login` | Login and get JWT token |
 | POST | `/transactions` | Create a transaction |
 | GET | `/transactions` | List all transactions |
 | GET | `/transactions/{id}` | Get a transaction by ID |
 | GET | `/transactions/summary` | Get income, expenses, and balance |
 | PUT | `/transactions/{id}` | Update a transaction |
 | DELETE | `/transactions/{id}` | Delete a transaction |
+
+All `/transactions` endpoints require authentication via Bearer token.
 
 ### Example Request
 
@@ -118,9 +122,9 @@ Transaction type must be either `"income"` or `"expense"`.
 
 ### Production (PostgreSQL)
 - [x] Migrate from SQLite to PostgreSQL
+- [x] User authentication (JWT, multi-user support)
+- [x] Multi-page routing (React Router)
 - [ ] Server-side pagination and filtering
-- [ ] User authentication (multi-user support)
-- [ ] Multi-page routing (React Router)
 - [ ] Transaction categories (food, rent, entertainment, etc.)
 - [ ] Monthly/weekly breakdowns
 - [ ] Charts and visualizations
