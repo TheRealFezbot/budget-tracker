@@ -23,6 +23,33 @@ header, th {
   text-align: center;
 }
 
+header {
+  display: flex;
+  justify-content: flex-end;
+  align-items: center;
+  position: relative;
+}
+
+header h1 {
+  position: absolute;
+  left: 50%;
+  transform: translateX(-50%);
+}
+
+.logout-btn {
+  background: transparent;
+  border: 1px solid var(--light-gray);
+  color: white;
+  padding: 0.5rem 1rem;
+  cursor: pointer;
+  border-radius: 4px;
+}
+
+.logout-btn:hover {
+  background: var(--light-gray);
+  color: black;
+}
+
 table {
   width: 100%;
   border-collapse: collapse;
@@ -188,5 +215,12 @@ form button {
 
 .filters h3 {
   width: 100%;
+  text-align: center;
+}
+
+.auth-container {
+  max-width: 400px;
+  margin: 2rem auto;
+  padding: 2rem;
   text-align: center;
 }
