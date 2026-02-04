@@ -124,8 +124,8 @@ Transaction type must be either `"income"` or `"expense"`.
 - [x] Migrate from SQLite to PostgreSQL
 - [x] User authentication (JWT, multi-user support)
 - [x] Multi-page routing (React Router)
-- [ ] Server-side pagination and filtering
-- [ ] Transaction categories (food, rent, entertainment, etc.)
+- [x] Server-side pagination and filtering
+- [x] Transaction categories (food, rent, entertainment, etc.)
 - [ ] Monthly/weekly breakdowns
 - [ ] Charts and visualizations
 - [ ] Export to CSV

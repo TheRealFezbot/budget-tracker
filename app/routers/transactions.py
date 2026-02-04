@@ -23,21 +23,30 @@ def create_transaction(
     
 @router.get("/transactions")
 def get_transaction(
+    current_user: User = Depends(get_current_user),
+    skip: int = 0,
+    limit: int = 15,
     type: TransactionType | None = None,
+    category: str | None = None,
     start_date: date | None = None,
     end_date: date | None = None,
-    current_user: User = Depends(get_current_user)
 ):
     with Session(engine) as session:
         query = select(Transaction).where(Transaction.user_id == current_user.id)
+        
         if type:
             query = query.where(Transaction.type == type)
+        if category:
+            query = query.where(Transaction.category == category)
         if start_date:
             query = query.where(Transaction.transaction_date >= start_date)
         if end_date:
             query = query.where(Transaction.transaction_date <= end_date)
-        result = session.exec(query).all()
-        return result
+        
+        total = len(session.exec(query).all())
+        transactions = session.exec(query.offset(skip).limit(limit)).all()
+
+        return {"transactions": transactions, "total": total}
 
 def get_transaction_or_404(session: Session, id: int):
     result = session.get(Transaction, id)

@@ -152,6 +152,18 @@ form button {
   margin-right: 0.25rem;
 }
 
+td {
+  white-space: nowrap;
+}
+
+.description {
+  max-width: 150px;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+
+
 .success-msg {
   color: var(--income);
   text-align: center;

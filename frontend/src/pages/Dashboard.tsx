@@ -57,9 +57,11 @@ function Dashboard() {
         net_balance: 0,
     })
     const [currentPage, setCurrentPage] = useState(1)
+    const [total, setTotal] = useState(0)
     const itemsPerPage = 15
     
     const [filterType, setFilterType] = useState<"all" | "income" | "expense">("all")
+    const [filterCategory, setFilterCategory] = useState<string>("")
     const [startDate, setStartDate] = useState("")
     const [endDate, setEndDate] = useState("")
 
@@ -81,7 +83,7 @@ function Dashboard() {
         headers: { "Authorization": `Bearer ${token}` }
         })
         .then(() => {
-        fetch(`${url}`, { headers: { "Authorization": `Bearer ${token}` } }).then(r => r.json()).then(data => setTransactions(data))
+        fetchTransactions()
         fetch(`${url}/summary`, { headers: { "Authorization": `Bearer ${token}` } }).then(r => r.json()).then(data => setSummary(data))
         const newTotal = transactions.length -1
         const maxPage = Math.ceil(newTotal / itemsPerPage) || 1
@@ -117,7 +119,7 @@ function Dashboard() {
         })
         .then((response) => {
         if (response.ok) {
-            fetch(`${url}`, { headers: { "Authorization": `Bearer ${token}` } }).then(r => r.json()).then(data => setTransactions(data))
+            fetchTransactions()
             fetch(`${url}/summary`, { headers: { "Authorization": `Bearer ${token}` } }).then(r => r.json()).then(data => setSummary(data))
             setMessage(editingId ? "Transaction Updated!" : "Transaction added!")
             resetForm()
@@ -135,19 +137,33 @@ function Dashboard() {
         setDescription("")
         setType("income")
         setAmount("")
-        setTransactionDate("")
+        setTransactionDate(new Date().toISOString().split("T")[0])
         setEditingId(null)
         setTimeout(() => setMessage(""), 3000)
     }
 
-    useEffect(() => {
-        fetch(`${url}`, {
+    const fetchTransactions = () => {
+        const params = new URLSearchParams()
+        params.append("skip", String((currentPage - 1) * itemsPerPage))
+        params.append("limit", String(itemsPerPage))
+        if (filterType && filterType !== "all") params.append("type", filterType)
+        if (filterCategory) params.append("category", filterCategory)
+        if (startDate) params.append("start_date", startDate)
+        if (endDate) params.append("end_date", endDate)
+
+        fetch(`${url}?${params.toString()}`, {
             headers: { "Authorization": `Bearer ${token}` }
         })
         .then(response => response.json())
-        .then(data => setTransactions(data))
-    }, []
-    )
+        .then(data => {
+            setTransactions(data.transactions)
+            setTotal(data.total)
+        })
+    }
+
+    useEffect(() => {
+        fetchTransactions()
+    }, [currentPage, filterType, filterCategory, startDate, endDate])
 
     useEffect(() => {
         fetch(`${url}/summary`, {
@@ -157,10 +173,7 @@ function Dashboard() {
         .then(data => setSummary(data))
     }, []
     )
-    const filtered = transactions
-    .filter(t => filterType === "all" || t.type === filterType)
-    .filter(t => !startDate || t.transaction_date >= startDate)
-    .filter(t => !endDate || t.transaction_date <= endDate)
+    
     
     return (
         <>
@@ -227,35 +240,49 @@ function Dashboard() {
             <div className='filters'>
                 <h3>filters</h3>
                 <label>Type:
-                <select value={filterType} onChange={(e) => { setFilterType(e.target.value as "all" | "income" | "expense"); setCurrentPage(1)}}>
-                    <option>all</option>
-                    <option>income</option>
-                    <option>expense</option>
-                </select>
+                    <select value={filterType} onChange={(e) => { setFilterType(e.target.value as "all" | "income" | "expense"); setCurrentPage(1)}}>
+                        <option>all</option>
+                        <option>income</option>
+                        <option>expense</option>
+                    </select>
+                </label>
+                <label>Category:
+                    <select value={filterCategory} onChange={(e) => { setFilterCategory(e.target.value); setCurrentPage(1)}}>
+                        <option value="">All</option>
+                        <option value="food">Food</option>
+                        <option value="transportation">Transportation</option>
+                        <option value="housing">Housing</option>
+                        <option value="utilities">Utilities</option>
+                        <option value="entertainment">Entertainment</option>
+                        <option value="shopping">Shopping</option>
+                        <option value="healthcare">Healthcare</option>
+                        <option value="salary">Salary</option>
+                        <option value="other">Other</option>
+                    </select>
                 </label>
                 <label>Start Date:
-                <input type='date' value={startDate} onChange={(e) => { setStartDate(e.target.value); setCurrentPage(1)}} />
+                    <input type='date' value={startDate} onChange={(e) => { setStartDate(e.target.value); setCurrentPage(1)}} />
                 </label>
                 <label>End Date:
-                <input type='date' value={endDate} onChange={(e) => { setEndDate(e.target.value); setCurrentPage(1)}} />
+                    <input type='date' value={endDate} onChange={(e) => { setEndDate(e.target.value); setCurrentPage(1)}} />
                 </label>
             </div>
             <table>
                 <thead>
-                <tr>
-                    <th>Name</th>
-                    <th>Description</th>
-                    <th>Amount</th>
-                    <th>Date</th>
-                    <th>Category</th>
-                    <th>Actions</th>
-                </tr>
+                    <tr>
+                        <th>Name</th>
+                        <th>Description</th>
+                        <th>Amount</th>
+                        <th>Date</th>
+                        <th>Category</th>
+                        <th>Actions</th>
+                    </tr>
                 </thead>
                 <tbody>
-                {filtered.slice((currentPage - 1) * itemsPerPage, currentPage * itemsPerPage).map((transaction) => (
+                {transactions.map((transaction) => (
                     <tr key={transaction.id}>
                     <td>{transaction.name}</td>
-                    <td>{transaction.description}</td>
+                    <td className='description'>{transaction.description}</td>
                     <td style={{ color: transaction.type === "income" ? "var(--income)" : "var(--expense)", fontWeight: "bold"}}>{transaction.type === "income" ? "+ " : "- "}€{transaction.amount}</td>
                     <td>{new Date(transaction.transaction_date).toLocaleDateString('en-GB', {
                         day: '2-digit',
@@ -263,7 +290,7 @@ function Dashboard() {
                         year: 'numeric'
                     }).replace(/\//g, '-')}</td>
                     <td className='trans-cat'>{transaction.category}</td>
-                    <td>
+                    <td className='actions'>
                         <button className='edit' onClick={() => handleEdit(transaction)}>
                         EDIT
                         </button>
@@ -277,8 +304,8 @@ function Dashboard() {
             </table>
             <div className='pagination'>
                 <button disabled={currentPage === 1} className='tableButton' onClick={() => setCurrentPage(currentPage - 1)}>Previous</button>
-                <button disabled={currentPage * itemsPerPage >= filtered.length} className='tableButton' onClick={() => setCurrentPage(currentPage + 1)}>Next</button>
-                <span style={{width: '100%', textAlign: 'center'}}>Page {currentPage} of {Math.ceil(filtered.length / itemsPerPage)}</span>
+                <button disabled={currentPage * itemsPerPage >= total} className='tableButton' onClick={() => setCurrentPage(currentPage + 1)}>Next</button>
+                <span style={{width: '100%', textAlign: 'center'}}>Page {currentPage} of {Math.ceil(total / itemsPerPage)}</span>
             </div>
             </section>
         </div>
