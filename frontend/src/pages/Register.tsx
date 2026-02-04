@@ -3,7 +3,7 @@ import { useNavigate, Link } from "react-router-dom"
 import "../App.css"
 
 function Register() {
-    const url = "http://localhost:8000"
+    const url = import.meta.env.VITE_API_URL
     
     
     const [username, setUsername] = useState("")

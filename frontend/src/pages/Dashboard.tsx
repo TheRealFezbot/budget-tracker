@@ -34,7 +34,7 @@ interface Summary {
 }
 
 function Dashboard() {
-    const url = "http://localhost:8000/transactions"
+    const url = import.meta.env.VITE_API_URL + "/transactions"
     const token = localStorage.getItem("token")
     const navigate = useNavigate()
 

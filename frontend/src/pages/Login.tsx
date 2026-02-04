@@ -2,7 +2,7 @@ import React, { useEffect, useState } from "react"
 import { useNavigate, Link } from "react-router-dom"
 
 function Login() {
-    const url = "http://localhost:8000"
+    const url = import.meta.env.VITE_API_URL
     useEffect(() => {
         const token = localStorage.getItem("token")
         if (token) {
