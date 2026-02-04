@@ -6,11 +6,23 @@ class TransactionType(str, Enum):
     income = "income"
     expense = "expense"
 
+class Category(str, Enum):
+    food = "food"
+    transportation = "transportation"
+    housing = "housing"
+    utilities = "utilities"
+    entertainment = "entertainment"
+    shopping = "shopping"
+    healthcare = "healthcare"
+    salary = "salary"
+    other = "other"
+
 class Transaction(SQLModel, table=True):
     id: int | None = Field(default=None, primary_key=True)
     user_id: int = Field(foreign_key="users.id")
     name: str
     description: str | None
+    category: Category
     type: TransactionType
     amount: float
     transaction_date: date
@@ -18,6 +30,7 @@ class Transaction(SQLModel, table=True):
 class TransactionCreate(SQLModel):
     name: str
     description: str | None
+    category: Category
     type: TransactionType
     amount: float
     transaction_date: date
@@ -25,6 +38,7 @@ class TransactionCreate(SQLModel):
 class TransactionUpdate(SQLModel):
     name: str | None = None
     description: str | None = None
+    category: Category | None = None
     type: TransactionType | None = None
     amount: float | None = None
     transaction_date: date | None = None

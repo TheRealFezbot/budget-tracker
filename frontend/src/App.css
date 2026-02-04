@@ -149,7 +149,7 @@ form button {
   padding: 0.4rem 0.75rem;
   cursor: pointer;
   font-weight: 600;
-  margin-left: 0.25rem;
+  margin-right: 0.25rem;
 }
 
 .success-msg {
@@ -223,4 +223,9 @@ form button {
   margin: 2rem auto;
   padding: 2rem;
   text-align: center;
+}
+
+.trans-cat {
+  text-transform: capitalize;
+  font-weight: bold;
 }

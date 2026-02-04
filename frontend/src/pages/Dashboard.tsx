@@ -2,11 +2,27 @@ import React, { useState, useEffect } from 'react'
 import '../App.css'
 import { useNavigate } from 'react-router-dom'
 
+type Category = 
+    | "food"
+    | "transportation"
+    | "housing"
+    | "utilities"
+    | "entertainment"
+    | "shopping"
+    | "healthcare"
+    | "salary"
+    | "other"
+
+type Type =
+    | "income"
+    | "expense"
+
 interface Transaction {
   id: number
   name: string
   description: string | null
-  type: "income" | "expense"
+  category: Category
+  type: Type
   amount: number
   transaction_date: string
 }
@@ -51,6 +67,7 @@ function Dashboard() {
     // transaction form
     const [name, setName] = useState("")
     const [description, setDescription] = useState("")
+    const [category, setCategory] = useState("other")
     const [type, setType] = useState<"income" | "expense">("income")
     const [amount, setAmount] = useState("")
     const [transactionDate, setTransactionDate] = useState(new Date().toISOString().split('T')[0])
@@ -77,6 +94,7 @@ function Dashboard() {
     const handleEdit = (transaction: Transaction) => {
         setName(transaction.name)
         setDescription(transaction.description || "")
+        setCategory(transaction.category)
         setType(transaction.type)
         setAmount(String(transaction.amount))
         setTransactionDate(transaction.transaction_date)
@@ -91,6 +109,7 @@ function Dashboard() {
         body: JSON.stringify({
             name: name,
             description: description,
+            category: category,
             type: type,
             amount: parseFloat(amount),
             transaction_date: transactionDate
@@ -173,6 +192,19 @@ function Dashboard() {
                 <label>Description: 
                 <input type='text' value={description} onChange={(e) => setDescription(e.target.value)}/>
                 </label>
+                <label>Category:
+                <select value={category} onChange={e => setCategory(e.target.value)}>
+                    <option value="food">Food</option>
+                    <option value="transportation">Transportation</option>
+                    <option value="housing">Housing</option>
+                    <option value="utilities">Utilities</option>
+                    <option value="entertainment">Entertainment</option>
+                    <option value="shopping">Shopping</option>
+                    <option value="healthcare">Healthcare</option>
+                    <option value="salary">Salary</option>
+                    <option value="other">Other</option>
+                </select>
+                </label>
                 <label>Type: 
                 <select value={type} onChange={(e) => setType(e.target.value as "income" | "expense")}>
                     <option>income</option>
@@ -215,6 +247,7 @@ function Dashboard() {
                     <th>Description</th>
                     <th>Amount</th>
                     <th>Date</th>
+                    <th>Category</th>
                     <th>Actions</th>
                 </tr>
                 </thead>
@@ -229,12 +262,13 @@ function Dashboard() {
                         month: '2-digit',
                         year: 'numeric'
                     }).replace(/\//g, '-')}</td>
+                    <td className='trans-cat'>{transaction.category}</td>
                     <td>
-                        <button className='delete' onClick={() => handleDelete(transaction.id)}>
-                        DELETE
-                        </button>
                         <button className='edit' onClick={() => handleEdit(transaction)}>
                         EDIT
+                        </button>
+                        <button className='delete' onClick={() => handleDelete(transaction.id)}>
+                        DELETE
                         </button>
                     </td>
                     </tr>
