@@ -129,4 +129,4 @@ Transaction type must be either `"income"` or `"expense"`.
 - [ ] Monthly/weekly breakdowns
 - [ ] Charts and visualizations
 - [ ] Export to CSV
-- [ ] Deploy to web
+- [x] Deploy to web (Render + Vercel)
